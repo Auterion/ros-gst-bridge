@@ -51,6 +51,8 @@ find_package(builtin_interfaces REQUIRED)
 #   DEPENDENCIES builtin_interfaces std_msgs
 # )
 
+add_subdirectory(libs/perfetto)
+
 
 
 ###########
@@ -74,6 +76,7 @@ add_library(rosgstbridge SHARED
   src/rosaudiosrc.cpp
   src/rosimagesrc.cpp
   src/rostextsrc.cpp
+  src/TracingCategories.cpp
   )
 
 
@@ -108,6 +111,7 @@ target_link_libraries(rosgstbridge PUBLIC
   ${GSTREAMER_VIDEO_LIBRARIES}
   ${GSTREAMER_BASE_LIBRARIES}
   ${GST_LIBRARIES}
+  perfetto::perfetto-lib
 )
 
 
@@ -139,6 +143,7 @@ target_link_libraries(gst_bridge PUBLIC
   ${GSTREAMER_VIDEO_LIBRARIES}
   ${GSTREAMER_BASE_LIBRARIES}
   ${GST_LIBRARIES}
+  perfetto::perfetto-lib
 )
 
 

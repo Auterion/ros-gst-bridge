@@ -32,6 +32,7 @@
 
 
 #include <gst_bridge/rosimagesrc.h>
+#include <gst_bridge/TracingCategories.h>
 
 GST_DEBUG_CATEGORY_STATIC (rosimagesrc_debug_category);
 #define GST_CAT_DEFAULT rosimagesrc_debug_category
@@ -91,6 +92,14 @@ G_DEFINE_TYPE_WITH_CODE (Rosimagesrc, rosimagesrc, GST_TYPE_ROS_BASE_SRC,
 
 static void rosimagesrc_class_init (RosimagesrcClass * klass)
 {
+  std::cout << "!!!!!!!!!!!!!! rosimagesrc_class_init" << std::endl << std::flush;
+  perfetto::TracingInitArgs args;
+  args.backends |= perfetto::kInProcessBackend;
+  args.backends |= perfetto::kSystemBackend;
+
+  perfetto::Tracing::Initialize(args);
+  perfetto::TrackEvent::Register();
+
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GstElementClass *element_class = GST_ELEMENT_CLASS (klass);
   GstBaseSrcClass *basesrc_class = GST_BASE_SRC_CLASS (klass);
@@ -537,6 +546,7 @@ static GstFlowReturn rosimagesrc_create (GstBaseSrc * base_src, guint64 offset, 
 
 static void rosimagesrc_sub_cb(Rosimagesrc * src, sensor_msgs::msg::Image::ConstSharedPtr msg)
 {
+  TRACE_EVENT("rosimagesrc", "rosimagesrc_sub_cb");
   RosBaseSrc *ros_base_src = GST_ROS_BASE_SRC (src);
   //GST_DEBUG_OBJECT (src, "ros cb called");
   //RCLCPP_DEBUG(ros_base_src->logger, "ros cb called");
